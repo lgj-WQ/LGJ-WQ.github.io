@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>爱心告白</title>
+    <style>
+        /* 隐藏网页滚动条，全屏效果 */
+        body { margin: 0; overflow: hidden; background: #000; }
+        /* 爱心弹窗样式 */
+        .heart-box {
+            position: absolute;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: #fff;
+            font-family: "微软雅黑", sans-serif;
+            font-weight: bold;
+            opacity: 0.95;
+            z-index: 10;
+        }
+        /* 告白文字样式（最后显示，突出） */
+        .confess-box {
+            position: absolute;
+            padding: 25px 30px;
+            background: #E63946;
+            border-radius: 12px;
+            color: #fff;
+            font-family: "微软雅黑", sans-serif;
+            font-size: 24px;
+            font-weight: bold;
+            font-style: italic;
+            opacity: 1;
+            z-index: 100; /* 层级最高，不被遮挡 */
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<script>
+// 1. 心形坐标生成（向右下偏移，和之前效果一致）
+function getHeartPoints(n = 80) {
+    const points = [];
+    for (let t = 0; t < n; t++) {
+        const angle = t * 2 * Math.PI / n;
+        let x = 16 * Math.pow(Math.sin(angle), 3);
+        let y = -(13 * Math.cos(angle) - 5 * Math.cos(2*angle) - 2 * Math.cos(3*angle) - Math.cos(4*angle));
+        x += 6; // 右偏
+        y += 6; // 下偏
+        points.push({x, y});
+    }
+    return points;
+}
+
+// 2. 随机温暖系颜色
+function getRandomColor() {
+    const colors = [
+        '#FFB8B8', '#FF8E53', '#FFD93D', '#6B8C77', '#4D96FF',
+        '#9D4EDD', '#E63946', '#F4978E', '#84A59D', '#F28482'
+    ];
+    return colors[Math.floor(Math.random() * colors.length)];
+}
+
+// 3. 弹窗文字库（原效果不变）
+const msgList = [
+    "保持好心情", "好好爱自己", "期待下一次见面", "你是我最想见的人", "今天也是爱你的一天",
+    "愿你被世界温柔以待", "想你了，不止今天", "你值得所有的美好", "生活很苦，但你很甜", "愿你永远笑得灿烂",
+    "我在原地，等你归来", "遇见你，是我最大的幸运", "每一天都想和你说早安", "想和你一起看遍世间风景", "你笑起来真好看"
+];
+
+// 4. 创建单个爱心弹窗
+function createHeartBox(x, y, text, color, delay) {
+    setTimeout(() => {
+        const box = document.createElement('div');
+        box.className = 'heart-box';
+        box.style.background = color;
+        box.style.fontSize = '14px';
+        box.innerText = text;
+        // 坐标放大+基准偏移，适配屏幕
+        const screenX = x * 35 + 400;
+        const screenY = y * 35 + 200;
+        box.style.left = `${screenX}px`;
+        box.style.top = `${screenY}px`;
+        document.body.appendChild(box);
+    }, delay);
+}
+
+// 5. 最后显示告白文字（赵韵寒我喜欢你）
+function showConfessText() {
+    const box = document.createElement('div');
+    box.className = 'confess-box';
+    box.innerText = '赵韵寒我喜欢你';
+    // 居中爱心中心
+    const screenX = 400 + 6*35 + 10;
+    const screenY = 200 + 6*35 - 20;
+    box.style.left = `${screenX}px`;
+    box.style.top = `${screenY}px`;
+    document.body.appendChild(box);
+}
+
+// 6. 主流程（和原Python节奏一致）
+function init() {
+    const points = getHeartPoints();
+    const totalDelay = points.length * 150; // 所有爱心弹窗生成总时长（0.15秒/个）
+    
+    // 批量创建爱心弹窗
+    points.forEach((point, i) => {
+        const msg = msgList[Math.floor(Math.random() * msgList.length)];
+        const color = getRandomColor();
+        const delay = i * 150; // 逐一生成节奏
+        createHeartBox(point.x, point.y, msg, color, delay);
+    });
+
+    // 所有爱心显示完，延迟1秒再显告白文字，显8秒后自动清屏
+    setTimeout(() => {
+        showConfessText();
+        setTimeout(() => {
+            document.body.innerHTML = ''; // 清空所有元素（关闭效果）
+        }, 8000);
+    }, totalDelay + 1000);
+}
+
+// 启动效果
+init();
+</script>
+</body>
+</html>
